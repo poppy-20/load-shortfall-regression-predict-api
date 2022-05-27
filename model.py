@@ -27,6 +27,7 @@ import pandas as pd
 import pickle
 import json
 
+
 def _preprocess_data(data):
     """Private helper function to preprocess data for model prediction.
 
@@ -48,7 +49,7 @@ def _preprocess_data(data):
     feature_vector_dict = json.loads(data)
     # Load the dictionary as a Pandas DataFrame.
     feature_vector_df = pd.DataFrame.from_dict([feature_vector_dict])
-
+    
     # ---------------------------------------------------------------
     # NOTE: You will need to swap the lines below for your own data
     # preprocessing methods.
@@ -58,58 +59,29 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-    predict_vector = feature_vector_df[[['Madrid_wind_speed', 'Valencia_wind_deg', 'Bilbao_rain_1h',
+    data['Valencia_pressure'] =  data['Valencia_pressure'].fillna( data['Valencia_pressure'].mode()[0])
+    data['Valencia_wind_deg'] =  data['Valencia_wind_deg'].str.extract('(\d+)')
+    data['Seville_pressure'] =  data['Seville_pressure'].str.extract('(\d+)')
+    data['Valencia_wind_deg'] = pd.to_numeric(data['Valencia_wind_deg'])
+    data['Seville_pressure'] = pd.to_numeric( data['Seville_pressure'])
+
+    data['time'] = pd.to_datetime(data['time'])
+    data['year'] = data['time'].dt.year   
+    data['month'] = data['time'].dt.month
+    data['day'] = data['time'].dt.day       
+    data['hour'] = data['time'].dt.hour 
+    predict_vector = feature_vector_df[['Madrid_wind_speed', 'Valencia_wind_deg', 'Bilbao_rain_1h',
        'Valencia_wind_speed', 'Seville_humidity', 'Madrid_humidity',
        'Bilbao_clouds_all', 'Bilbao_wind_speed', 'Seville_clouds_all',
        'Bilbao_wind_deg', 'Barcelona_wind_speed', 'Barcelona_wind_deg',
        'Madrid_clouds_all', 'Seville_wind_speed', 'Barcelona_rain_1h',
        'Seville_pressure', 'Seville_rain_1h', 'Bilbao_snow_3h',
        'Barcelona_pressure', 'Seville_rain_3h', 'Madrid_rain_1h',
-       'Barcelona_rain_3h']]]
-    df=df.copy()
-    df['time'] = pd.to_datetime(df['time'])
-    df['year'] = df['time'].dt.year   
-    df['month'] = df['time'].dt.month
-    df['day'] = df['time'].dt.day       
-    df['hour'] = df['time'].dt.hour
+       'Barcelona_rain_3h', 'Valencia_snow_3h', 'Bilbao_pressure',
+       'Valencia_pressure', 'Madrid_pressure', 'Valencia_temp', 'Seville_temp',
+       'Valencia_humidity', 'Barcelona_temp', 'Bilbao_temp', 'Madrid_temp',
+       'load_shortfall_3h', 'year', 'month', 'day', 'hour']] 
 
-    df_test1['time'] = pd.to_datetime(df_test1['time'])
-    df_test1['year'] = df_test1['time'].dt.year   
-    df_test1['month'] = df_test1['time'].dt.month
-    df_test1['day'] = df_test1['time'].dt.day       
-    df_test1['hour'] = df_test1['time'].dt.hour
-
-    df['Valencia_pressure'] = df['Valencia_pressure'].fillna(df['Valencia_pressure'].mode()[0])
-    df_test1['Valencia_pressure'] = df_test1['Valencia_pressure'].fillna(df_test['Valencia_pressure'].mode()[0])
-    
-    df['Valencia_wind_deg'] = df['Valencia_wind_deg'].str.extract('(\d+)')
-    df['Seville_pressure'] = df['Seville_pressure'].str.extract('(\d+)')
-
-    df['Valencia_wind_deg'] = pd.to_numeric(df['Valencia_wind_deg'])
-    df['Seville_pressure'] = pd.to_numeric(df['Seville_pressure'])
-
-    df_test1['Seville_pressure'] = df_test1['Seville_pressure'].str.extract('(\d+)')
-    df_test1['Valencia_wind_deg'] = df_test1['Valencia_wind_deg'].str.extract('(\d+)')
-    
-    df_test1['Seville_pressure'] = pd.to_numeric(df_test1['Seville_pressure'])
-    df_test1['Valencia_wind_deg'] = pd.to_numeric(df_test1['Valencia_wind_deg'])
-
-    from sklearn.preprocessing import StandardScaler
-
-    #standardize the train and test data
-    standardized_train = df.drop(['load_shortfall_3h','time'], axis=1)
-    standardized_test=df_test1.drop('time',axis=1)
-
-    # create scaler object
-    scaler = StandardScaler()
-
-    test_scaled = scaler.fit_transform(standardized_test)
-    train_scaled = scaler.fit_transform(standardized_train)
-
-    # convert the scaled predictor values into a dataframe
-    stand_train = pd.DataFrame(train_scaled,columns=standardized_train.columns)
-    stand_test = pd.DataFrame(test_scaled,columns=standardized_test.columns)
-   
     return predict_vector
 
 def load_model(path_to_model:str):
@@ -151,19 +123,10 @@ def make_prediction(data, model):
         A 1-D python list containing the model prediction.
 
     """
+   
     # Data preprocessing.
-    X = df.drop(['load_shortfall_3h','time'], axis=1)
-    y = df['load_shortfall_3h']
-    X_train, X_test, y_train, y_test = train_test_split(standardized_train,y,test_size=0.20,random_state=1)
+
     prep_data = _preprocess_data(data)
-
-
-    # Perform prediction with model and preprocessed data.
-    regr_tree = DecisionTreeRegressor(max_depth=4,random_state=42)
-    regr_tree.fit(x_train,y_train)
-    # Test the model
-    y_pred_train = regr_tree.predict(x_train)
-    y_pred_test = regr_tree.predict(x_test)
     prediction = model.predict(prep_data)
     # Format as list for output standardisation.
     return prediction[0].tolist()
