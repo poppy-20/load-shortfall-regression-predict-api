@@ -30,7 +30,7 @@ app = Flask(__name__)
 # Load our model into memory.
 # Please update this path to reflect your own trained model.
 static_model = load_model(
-    path_to_model='assets/trained-models/Tree_model.pkl')
+    path_to_model='assets/trained-models/lm_model.pkl')
 
 print ('-'*40)
 print ('Model successfully loaded')
@@ -48,9 +48,11 @@ print ('-'*40)
 @app.route('/api_v0.1', methods=['POST'])
 def model_prediction():
     # We retrieve the data payload of the POST request
+    print("Any model prediction")
     data = request.get_json(force=True)
     # We then preprocess our data, and use our pretrained model to make a
     # prediction.
+    print(data)
     output = make_prediction(data, static_model)
     # We finally package this prediction as a JSON object to deliver a valid
     # response with our API.
@@ -62,4 +64,4 @@ def model_prediction():
 # This will allow Flask to automatically restart itself everytime you
 # update your API code.
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=True)
