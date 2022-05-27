@@ -59,28 +59,20 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-    data['Valencia_pressure'] =  data['Valencia_pressure'].fillna( data['Valencia_pressure'].mode()[0])
-    data['Valencia_wind_deg'] =  data['Valencia_wind_deg'].str.extract('(\d+)')
-    data['Seville_pressure'] =  data['Seville_pressure'].str.extract('(\d+)')
-    data['Valencia_wind_deg'] = pd.to_numeric(data['Valencia_wind_deg'])
-    data['Seville_pressure'] = pd.to_numeric( data['Seville_pressure'])
+    # data['Valencia_pressure'] =  data['Valencia_pressure'].fillna( data['Valencia_pressure'].mode()[0])
+    # data['Valencia_wind_deg'] =  data['Valencia_wind_deg'].str.extract('(\d+)')
+    # data['Seville_pressure'] =  data['Seville_pressure'].str.extract('(\d+)')
+    # data['Valencia_wind_deg'] = pd.to_numeric(data['Valencia_wind_deg'])
+    # data['Seville_pressure'] = pd.to_numeric( data['Seville_pressure'])
 
-    data['time'] = pd.to_datetime(data['time'])
-    data['year'] = data['time'].dt.year   
-    data['month'] = data['time'].dt.month
-    data['day'] = data['time'].dt.day       
-    data['hour'] = data['time'].dt.hour 
-    predict_vector = feature_vector_df[['Madrid_wind_speed', 'Valencia_wind_deg', 'Bilbao_rain_1h',
+    # data['time'] = pd.to_datetime(data['time'])
+    # data['year'] = data['time'].dt.year   
+    # data['month'] = data['time'].dt.month
+    # data['day'] = data['time'].dt.day       
+    # data['hour'] = data['time'].dt.hour 
+    predict_vector = feature_vector_df[['Madrid_wind_speed',  'Bilbao_rain_1h',
        'Valencia_wind_speed', 'Seville_humidity', 'Madrid_humidity',
-       'Bilbao_clouds_all', 'Bilbao_wind_speed', 'Seville_clouds_all',
-       'Bilbao_wind_deg', 'Barcelona_wind_speed', 'Barcelona_wind_deg',
-       'Madrid_clouds_all', 'Seville_wind_speed', 'Barcelona_rain_1h',
-       'Seville_pressure', 'Seville_rain_1h', 'Bilbao_snow_3h',
-       'Barcelona_pressure', 'Seville_rain_3h', 'Madrid_rain_1h',
-       'Barcelona_rain_3h', 'Valencia_snow_3h', 'Bilbao_pressure',
-       'Valencia_pressure', 'Madrid_pressure', 'Valencia_temp', 'Seville_temp',
-       'Valencia_humidity', 'Barcelona_temp', 'Bilbao_temp', 'Madrid_temp',
-       'load_shortfall_3h', 'year', 'month', 'day', 'hour']] 
+       'Bilbao_clouds_all', 'Bilbao_wind_speed']] 
 
     return predict_vector
 
