@@ -1,12 +1,9 @@
 """
     Simple file to create a sklearn model for deployment in our API
-
     Author: Explore Data Science Academy
-
     Description: This script is responsible for training a simple linear
     regression model which is used within the API for initial demonstration
     purposes.
-
 """
 
 # Dependencies
